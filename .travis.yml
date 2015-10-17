@@ -9,7 +9,7 @@ branches:
 env:
   - FEDORA_VERSION="3.5"
   - FEDORA_VERSION="3.6.2"
-  - FEDORA_VERSION="3.7.0
+  - FEDORA_VERSION="3.7.0"
   - FEDORA_VERSION="3.8.1"
 before_install:
   - cd $HOME
