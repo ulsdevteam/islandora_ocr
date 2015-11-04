@@ -116,11 +116,17 @@ function islandora_ocr_get_uploaded_file(AbstractDatastream $datastream) {
  *   The page datastream that the derivatives will be generated for.
  * @param array $options
  *   The options for tesseract.
+ * @param bool $ingest
+ *   Whether or not to ingest the datastreams now; otherwise, references will
+ *   be returned to the converted files.
  *
- * @return bool
- *   TRUE on success, FALSE otherwise.
+ * @return bool|array
+ *   If $ingest is true, this returns TRUE on success and FALSE on failure. If
+ *   $ingest is FALSE, this returns an associative array containing 'OCR' and
+ *   'HOCR', each paired with either the path to their respective file, or FALSE
+ *   if generation of that datastream had failed.
  */
-function islandora_ocr_derive_datastreams(AbstractDatastream $datastream, array $options) {
+function islandora_ocr_derive_datastreams(AbstractDatastream $datastream, array $options, $ingest = TRUE) {
   module_load_include('inc', 'islandora_ocr', 'includes/utilities');
   $options += array(
     'language' => 'eng',
@@ -160,13 +166,24 @@ function islandora_ocr_derive_datastreams(AbstractDatastream $datastream, array 
 
   $ocr_file = islandora_ocr_create_ocr($source_file, $options);
   $hocr_file = islandora_ocr_create_hocr($source_file, $options);
-  $ret = $ocr_file;
-  $ret = $ret && islandora_ocr_update_datastream($datastream->parent, $ocr_file, 'OCR');
-  $ret = $ret && $hocr_file;
-  $ret = $ret && islandora_ocr_update_datastream($datastream->parent, $hocr_file, 'HOCR');
+  if ($ingest) {
+    $ret = $ocr_file;
+    $ret = $ret && islandora_ocr_update_datastream($datastream->parent, $ocr_file, 'OCR');
+    $ret = $ret && $hocr_file;
+    $ret = $ret && islandora_ocr_update_datastream($datastream->parent, $hocr_file, 'HOCR');
 
-  $files = array_filter(array($source_file, $ocr_file, $hocr_file));
-  array_map('file_unmanaged_delete', $files);
+    $files = array_filter(array($source_file, $ocr_file, $hocr_file));
+    array_map('file_unmanaged_delete', $files);
+  }
+  else {
+    $ret = $ocr_file && $hocr_file;
+    if ($ret !== FALSE) {
+      $ret = array(
+        'OCR' => $ocr_file,
+        'HOCR' => $hocr_file,
+      );
+    }
+  }
   return $ret;
 }
 
