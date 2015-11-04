@@ -5,12 +5,15 @@
  * Unit test for the HOCR class.
  */
 
+/**
+ * HOCR unit tests.
+ */
 class HOCRUnitTestCase extends DrupalWebTestCase {
 
   /**
    * Gets info to display to describe this test.
    *
-   * @see DrupalUnitTestCase::getInfo()
+   * @see DrupalWebTestCase::getInfo()
    */
   public static function getInfo() {
     return array(
@@ -23,7 +26,7 @@ class HOCRUnitTestCase extends DrupalWebTestCase {
   /**
    * Sets up the requirements for this test.
    *
-   * @see DrupalUnitTestCase::setUp()
+   * @see DrupalWebTestCase::setUp()
    */
   public function setUp() {
     parent::setUp('islandora_ocr');
@@ -71,21 +74,21 @@ class HOCRUnitTestCase extends DrupalWebTestCase {
     $this->assertEqual($dimensions, array('width' => 640, 'height' => 480), 'Get page dimensions returned correct value');
     // Test Phrase matching.
     $results = $hocr->search('test the', array(
-                 'case_sensitive' => TRUE,
-                 'match_exact_phrase' => TRUE,
-               ));
+      'case_sensitive' => TRUE,
+      'match_exact_phrase' => TRUE,
+    ));
     $this->assertEqual(count($results), 2, 'Searching for match of exact phrase "the test" returned expected number of results');
     // Test Phrase matching case-insensitive.
     $results = $hocr->search('tESt tHe', array(
-                 'case_sensitive' => FALSE,
-                 'match_exact_phrase' => TRUE,
-               ));
+      'case_sensitive' => FALSE,
+      'match_exact_phrase' => TRUE,
+    ));
     $this->assertEqual(count($results), 2, 'Searching for match of exact case-insensitive phrase "the test" returned expected number of results');
     // Test against Phrase matching.
     $results = $hocr->search('test the', array(
-                 'case_sensitive' => TRUE,
-                 'match_exact_phrase' => FALSE,
-               ));
+      'case_sensitive' => TRUE,
+      'match_exact_phrase' => FALSE,
+    ));
     $this->assertEqual(count($results), 6, 'Test against exact phrase "the test" returned expected number of results');
     // Test Solr matching.
     $file = drupal_get_path('module', 'islandora_ocr') . '/tests/fixtures/solr_results.xml';

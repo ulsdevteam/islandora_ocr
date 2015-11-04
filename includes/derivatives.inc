@@ -26,13 +26,12 @@ function islandora_ocr_create_ocr($image_file, array $options) {
   $command = "{$executable} {$image_file} {$image_file} -l {$options['language']} 2>&1";
   exec($command, $output, $ret);
   if ($ret != '0' || !file_exists($out_file)) {
-    $message = 'Tesseract failed to create OCR datastreams.<br/>Error: @ret<br/>Command: @command<br/>Output: !output';
     $variables = array(
       '@ret' => $ret,
       '@command' => $command,
       '!output' => implode('<br/>', $output),
     );
-    watchdog('islandora_ocr', $message, $variables, WATCHDOG_ERROR);
+    watchdog('islandora_ocr', 'Tesseract failed to create OCR datastreams.<br/>Error: @ret<br/>Command: @command<br/>Output: !output', $variables, WATCHDOG_ERROR);
     return FALSE;
   }
   return $out_file;
@@ -65,25 +64,26 @@ function islandora_ocr_create_hocr($image_file, array $options) {
     $out_file = file_unmanaged_move("$image_file.hocr", "temporary://$base_name.html", FILE_EXISTS_REPLACE);
   }
   if ($ret != '0' || empty($out_file) || !file_exists($out_file)) {
-    $message = 'Tesseract failed to create an HOCR datastream.<br/>Error: @ret<br/>Command: @command<br/>Output: !output';
     $variables = array(
       '@ret' => $ret,
       '@command' => $command,
       '!output' => implode('<br/>', $output),
     );
-    watchdog('islandora_ocr', $message, $variables, WATCHDOG_ERROR);
+    watchdog('islandora_ocr', 'Tesseract failed to create an HOCR datastream.<br/>Error: @ret<br/>Command: @command<br/>Output: !output', $variables, WATCHDOG_ERROR);
     return FALSE;
   }
 
   if (!HOCR::isValid($out_file)) {
-    $message = 'Tesseract failed to create a valid HOCR datastream. Please ensure you are running a supported version of Tesseract (3.02.02 or later).';
-    $message .= '<br/>Error: @ret<br/>Command: @command<br/>Output: !output';
     $variables = array(
       '@ret' => $ret,
       '@command' => $command,
       '!output' => implode('<br/>', $output),
     );
-    watchdog('islandora_ocr', $message, $variables, WATCHDOG_ERROR);
+    watchdog('islandora_ocr',
+      'Tesseract failed to create a valid HOCR datastream. Please ensure you are running a supported version of Tesseract (3.02.02 or later).<br/>Error: @ret<br/>Command: @command<br/>Output: !output',
+      $variables,
+      WATCHDOG_ERROR
+    );
     return FALSE;
   }
 
@@ -414,13 +414,12 @@ function islandora_ocr_imagemagick_convert($src, $dest, $args) {
   $output = '';
   $ret = -1;
   if (_imagemagick_convert_exec($command, $output, $ret) !== TRUE) {
-    $message = 'ImageMagick failed to create a derivative.<br/>Error: @ret<br/>Command: @command<br/>Output: @output';
     $variables = array(
       '@ret' => $ret,
       '@command' => $command,
       '@output' => $output,
     );
-    watchdog('islandora_ocr', $message, $variables, WATCHDOG_ERROR);
+    watchdog('islandora_ocr', 'ImageMagick failed to create a derivative.<br/>Error: @ret<br/>Command: @command<br/>Output: @output', $variables, WATCHDOG_ERROR);
     return FALSE;
   }
   return $dest;
