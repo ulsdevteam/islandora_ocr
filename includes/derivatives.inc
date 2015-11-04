@@ -117,8 +117,10 @@ function islandora_ocr_get_uploaded_file(AbstractDatastream $datastream) {
  * @param array $options
  *   The options for tesseract.
  * @param bool $ingest
- *   Whether or not to ingest the datastreams now; otherwise, references will
- *   be returned to the converted files.
+ *   Whether or not to ingest the datastreams during the execution of this
+ *   function and then clean up the generated OCR files from the temp folder;
+ *   otherwise, references will be returned to the converted files, and
+ *   generated files will have to be cleaned up later.
  *
  * @return bool|array
  *   If $ingest is true, this returns TRUE on success and FALSE on failure. If
