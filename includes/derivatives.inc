@@ -117,7 +117,7 @@ function islandora_ocr_get_uploaded_file(AbstractDatastream $datastream) {
  * @param array $options
  *   The options for tesseract.
  *
- * @return bool|array
+ * @return bool
  *   Returns TRUE on success and FALSE on failure.
  */
 function islandora_ocr_derive_datastreams(AbstractDatastream $datastream, array $options) {
