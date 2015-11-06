@@ -110,7 +110,7 @@ function islandora_ocr_get_uploaded_file(AbstractDatastream $datastream) {
 }
 
 /**
- * Creates and adds the OCR, HOCR datastreams.
+ * Generates OCR and HOCR derivatives from a page and adds them as datastreams.
  *
  * @param AbstractDatastream $datastream
  *   The page datastream that the derivatives will be generated for.
@@ -121,7 +121,7 @@ function islandora_ocr_get_uploaded_file(AbstractDatastream $datastream) {
  *   Returns TRUE on success and FALSE on failure.
  */
 function islandora_ocr_derive_datastreams(AbstractDatastream $datastream, array $options) {
-  $derivatives = islandora_ocr_generate_datastreams($datastream, $options);
+  $derivatives = islandora_ocr_generate_derivatives($datastream, $options);
   $ret = $derivatives['OCR'];
   $ret = $ret && islandora_ocr_update_datastream($datastream->parent, $derivatives['OCR'], 'OCR');
   $ret = $ret && $derivatives['HOCR'];
@@ -133,7 +133,7 @@ function islandora_ocr_derive_datastreams(AbstractDatastream $datastream, array 
 }
 
 /**
- * Generates OCR/HOCR datastreams and returns references to them.
+ * Generates OCR/HOCR derivatives and returns references to them.
  *
  * @param AbstractDatastream $datastream
  *   The page datastream to generate derivatives for.
@@ -142,9 +142,9 @@ function islandora_ocr_derive_datastreams(AbstractDatastream $datastream, array 
  *
  * @return array
  *   An associative array containing 'OCR' and 'HOCR', paired with either the
- *   path to each datastream, or FALSE on failure.
+ *   path to that derivative, or FALSE on failure.
  */
-function islandora_ocr_generate_datastreams(AbstractDatastream $datastream, array $options) {
+function islandora_ocr_generate_derivatives(AbstractDatastream $datastream, array $options) {
   module_load_include('inc', 'islandora_ocr', 'includes/utilities');
   $options += array(
     'language' => 'eng',
