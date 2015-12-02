@@ -45,6 +45,12 @@ function islandora_ocr_highlighted_solr_search($query, $offset = 0, $limit = -1,
     "hl.snippets" => "8",
   ) + $params;
 
+   if (variable_get('islandora_solr_use_ui_qf', FALSE) || !islandora_solr_check_dismax()) {
+       // Put our "qf" in if we are configured to, or we have none from the
+       // request handler.
+       $params['qf'] = variable_get('islandora_solr_query_fields', 'dc.title^5 dc.subject^2 dc.description^2 dc.creator^2 dc.contributor^1 dc.type');
+   }
+  
   $url = parse_url(variable_get('islandora_solr_url', 'localhost:8080/solr'));
   $solr = new Apache_Solr_Service($url['host'], $url['port'], $url['path'] . '/');
   $solr->setCreateDocuments(0);
