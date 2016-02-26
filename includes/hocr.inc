@@ -526,7 +526,7 @@ class HOCR {
       }
     }
     // Some HOCR implementations don't provide unique IDs for words. In this
-    // case let's use the node path as it's guarenteed to be unique. These IDs
+    // case let's use the node path as it's guaranteed to be unique. These IDs
     // are currently not used in any of the theme layer code.
     $properties = array_filter(array(
       'id' => $element->hasAttribute('id') ? $element->getAttribute('id') : $element->getNodePath(),
