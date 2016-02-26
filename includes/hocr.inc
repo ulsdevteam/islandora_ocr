@@ -132,7 +132,7 @@ class HOCR {
       // ppageno is not an explicitly required element within an ocr_page
       // element. Similarly, with the hOCR that gets generated with tesseract
       // the page number will always be 0.
-      if ((isset($page['ppageno']) && $page['ppageno'] == $page_number) || !isset($page['pageno'])) {
+      if ((isset($page['ppageno']) && $page['ppageno'] == $page_number) || !isset($page['ppageno'])) {
         return $this->getPropertyDimensions($page);
       }
     }
