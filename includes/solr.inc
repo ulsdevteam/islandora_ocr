@@ -131,13 +131,8 @@ function islandora_ocr_map_highlighted_fields_to_words(HOCR $hocr, array $search
   $highlighted_matches = array();
   foreach ($snippets as $snippet) {
     $matches = $hocr->search($snippet, $search_params);
-    $word_id = 1;
     foreach ($matches as $match) {
-      // Some hOCR implementations don't provide unique IDs for words. In this
-      // case let's grab a numerical one. It doesn't get used in any of the
-      // theme layer code that currently exists.
-      $id = isset($match['id']) ? $match['id'] : $word_id;
-      $word_id++;
+      $id = $match['id'];
       if (empty($highlighted_matches[$id])) {
         $highlighted_matches[$id] = $match;
       }

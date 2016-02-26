@@ -525,8 +525,11 @@ class HOCR {
         $ppageno = isset($matches[1]) ? intval($matches[1]) : NULL;
       }
     }
+    // Some HOCR implementations don't provide unique IDs for words. In this
+    // case let's use the node path as it's guarenteed to be unique. These IDs
+    // are currently not used in any of the theme layer code.
     $properties = array_filter(array(
-      'id' => $element->hasAttribute('id') ? $element->getAttribute('id') : NULL,
+      'id' => $element->hasAttribute('id') ? $element->getAttribute('id') : $element->getNodePath(),
       'class' => $element->hasAttribute('class') ? $element->getAttribute('class') : NULL,
       'dir' => $element->hasAttribute('dir') ? $element->getAttribute('dir') : NULL,
       'bbox' => $bbox));
