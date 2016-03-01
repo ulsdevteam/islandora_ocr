@@ -78,6 +78,12 @@ class HOCR {
 
   /**
    * Gets the OCR engine creator.
+   *
+   * @param string $file
+   *   The absolute path to the HOCR file.
+   *
+   * @return bool|string
+   *   The version if successful, FALSE otherwise.
    */
   public static function getCreator($file) {
     @$doc = simplexml_load_file($file);
