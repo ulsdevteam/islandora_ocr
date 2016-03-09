@@ -16,11 +16,11 @@ This module requires the following modules/libraries:
 
 * [Islandora](https://github.com/islandora/islandora)
 * [Tuque](https://github.com/islandora/tuque)
-* [Tesseract](http://code.google.com/p/tesseract-ocr/)
+* [Tesseract](https://github.com/tesseract-ocr/tesseract/wiki)
 * [ImageMagic](http://www.imagemagick.org/) (Optional, Required for OCR preprocessing)
 
 Tesseract installation will differ depending on your operating system; please see the
-Tesseract [README Wiki](http://code.google.com/p/tesseract-ocr/wiki/ReadMe) for detailed instructions.
+[Tesseract Wiki](https://github.com/tesseract-ocr/tesseract/wiki) for detailed instructions.
 
 ## Installation
 
@@ -52,11 +52,11 @@ Any objects that were previously ingested but require this functionality will ne
 
 ### Tesseract
 
-Tesseract provides many languages which can be downloaded from [here](http://code.google.com/p/tesseract-ocr/downloads/list).
+Tesseract provides many languages which can be downloaded from [here](https://github.com/tesseract-ocr/tessdata).
 
 To install just unzip them in your tessdata directory, typically located at `/usr/local/share/tessdata`
 
-If you want to add your own langauges or train your Tesseract for your specific needs please review the documentation [here](http://code.google.com/p/tesseract-ocr/wiki/TrainingTesseract3)
+If you want to add your own langauges or train your Tesseract for your specific needs please review the documentation [here](https://github.com/tesseract-ocr/tesseract/wiki/TrainingTesseract)
 
 ## Documentation
 
