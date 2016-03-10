@@ -61,32 +61,37 @@ class HOCR {
   public static function isValid($file) {
     module_load_include('inc', 'islandora_ocr', 'includes/utilities');
     if (file_exists($file)) {
-      $version = self::getVersion($file);
-      return version_compare($version, islandora_ocr_required_tesseract_version()) >= 0;
+      $creator = self::getCreator($file);
+      if ($creator) {
+        // The source was created by tesseract, for which we only support a
+        // minimum version. Check that now.
+        if (strrpos($creator, 'tesseract') === 0) {
+          $version = str_replace(array('tesseract', ' '), '', $creator);
+          return version_compare($version, islandora_ocr_required_tesseract_version()) >= 0;
+        }
+        return TRUE;
+      }
+      return FALSE;
     }
     return FALSE;
   }
 
   /**
-   * Gets the version of the give HOCR file.
-   *
-   * Parses the meta tags in the given file to determine the version. Older
-   * versions of tesseract don't include the version information.
+   * Gets the OCR engine creator.
    *
    * @param string $file
    *   The absolute path to the HOCR file.
    *
-   * @return string
+   * @return bool|string
    *   The version if successful, FALSE otherwise.
    */
-  public static function getVersion($file) {
+  public static function getCreator($file) {
     @$doc = simplexml_load_file($file);
     if ($doc) {
       $doc->registerXPathNamespace('ns', 'http://www.w3.org/1999/xhtml');
       $content_attributes = $doc->xpath('/ns:html/ns:head/ns:meta[@name="ocr-system"]/@content');
-      $version = (string) reset($content_attributes);
-      $version = str_replace(array('tesseract', ' '), '', $version);
-      return empty($version) ? FALSE : $version;
+      $creator = (string) reset($content_attributes);
+      return empty($creator) ? FALSE : $creator;
     }
     return FALSE;
   }
@@ -128,7 +133,12 @@ class HOCR {
     $nodes = $this->findClassNodes('ocr_page');
     $pages = $this->getProperties($nodes);
     foreach ($pages as $page) {
-      if ($page['ppageno'] == $page_number) {
+      // For things that have page numbers set return the match. Otherwise
+      // return the first page in other pages array. It's to be noted that
+      // ppageno is not an explicitly required element within an ocr_page
+      // element. Similarly, with the hOCR that gets generated with tesseract
+      // the page number will always be 0.
+      if ((isset($page['ppageno']) && $page['ppageno'] == $page_number) || !isset($page['ppageno'])) {
         return $this->getPropertyDimensions($page);
       }
     }
@@ -521,8 +531,11 @@ class HOCR {
         $ppageno = isset($matches[1]) ? intval($matches[1]) : NULL;
       }
     }
+    // Some HOCR implementations don't provide unique IDs for words. In this
+    // case let's use the node path as it's guaranteed to be unique. These IDs
+    // are currently not used in any of the theme layer code.
     $properties = array_filter(array(
-      'id' => $element->hasAttribute('id') ? $element->getAttribute('id') : NULL,
+      'id' => $element->hasAttribute('id') ? $element->getAttribute('id') : $element->getNodePath(),
       'class' => $element->hasAttribute('class') ? $element->getAttribute('class') : NULL,
       'dir' => $element->hasAttribute('dir') ? $element->getAttribute('dir') : NULL,
       'bbox' => $bbox));
