@@ -80,9 +80,9 @@ function islandora_ocr_create_hocr($image_file, array $options) {
       '!output' => implode('<br/>', $output),
     );
     watchdog('islandora_ocr',
-        'Tesseract failed to create a valid HOCR datastream. Please ensure you are running a supported version of Tesseract (3.02.02 or later).<br/>Error: @ret<br/>Command: @command<br/>Output: !output',
-        $variables,
-        WATCHDOG_ERROR
+      'Tesseract failed to create a valid HOCR datastream. Please ensure you are running a supported version of Tesseract (3.02.02 or later).<br/>Error: @ret<br/>Command: @command<br/>Output: !output',
+      $variables,
+      WATCHDOG_ERROR
     );
     return FALSE;
   }
