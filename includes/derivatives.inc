@@ -50,7 +50,33 @@ function islandora_ocr_create_ocr($image_file, array $options) {
  *   The absolute path to the generated HOCR if successful, FALSE otherwise.
  */
 function islandora_ocr_create_hocr($image_file, array $options) {
+  module_load_include('inc', 'islandora_ocr', 'includes/utilities');
   $image_file = drupal_realpath($image_file);
+  $identify = islandora_ocr_get_identify();
+  $depth = intval(exec(escapeshellcmd("$identify -format \"%z\" $image_file")));
+  $codec = strtolower(exec(escapeshellcmd("$identify -format \"%m\" $image_file")));
+  $alpha = exec(escapeshellcmd("$identify -format \"%A\" $image_file"));
+
+  // XXX: Likely an incomplete list... Cursory search didn't turn up a full
+  // list.
+  $supported_codecs = array(
+    'jpeg',
+    'tiff',
+    'png',
+  );
+  if ($depth > 8 || !in_array($codec, $supported_codecs) || $alpha == 'True') {
+    $c_dest = file_create_filename(drupal_basename($image_file) . ".tif", 'temporary://');
+    $c_args = array(
+      '-colorspace Gray',
+      '-depth 8',
+      '-compress None',
+      '-alpha Off',
+    );
+
+    $old_image_file = $image_file;
+    $image_file = islandora_ocr_imagemagick_convert($image_file, $c_dest, $c_args);
+    drupal_unlink($old_image_file);
+  }
   $out_file = "$image_file.html";
   $executable = variable_get('islandora_ocr_tesseract', '/usr/bin/tesseract');
   $output = array();
@@ -79,10 +105,7 @@ function islandora_ocr_create_hocr($image_file, array $options) {
       '@command' => $command,
       '!output' => implode('<br/>', $output),
     );
-    watchdog('islandora_ocr',
-      'Tesseract failed to create a valid HOCR datastream. Please ensure you are running a supported version of Tesseract (3.02.02 or later).<br/>Error: @ret<br/>Command: @command<br/>Output: !output',
-      $variables,
-      WATCHDOG_ERROR
+    watchdog('islandora_ocr', 'Tesseract failed to create a valid HOCR datastream. Please ensure you are running a supported version of Tesseract (3.02.02 or later).<br/>Error: @ret<br/>Command: @command<br/>Output: !output', $variables, WATCHDOG_ERROR
     );
     return FALSE;
   }
@@ -150,39 +173,6 @@ function islandora_ocr_generate_derivatives(AbstractDatastream $datastream, arra
     'language' => 'eng',
   );
   $source_file = islandora_ocr_get_uploaded_file($datastream);
-
-  // Check the depth of the image, to see if it can be processed with
-  // tesseract. If it can not, reduce the depth and grayscale it.
-  $identify = islandora_ocr_get_identify();
-
-  $file = drupal_realpath($source_file);
-
-  $depth = intval(exec(escapeshellcmd("$identify -format \"%z\" $file")));
-  $codec = strtolower(exec(escapeshellcmd("$identify -format \"%m\" $file")));
-  $alpha = exec(escapeshellcmd("$identify -format \"%A\" $file"));
-
-  // XXX: Likely an incomplete list... Cursory search didn't turn up a full
-  // list.
-  $supported_codecs = array(
-    'jpeg',
-    'tiff',
-    'png',
-  );
-  if ($depth > 8 || !in_array($codec, $supported_codecs) || $alpha == 'True') {
-    $c_dest = file_create_filename(drupal_basename($source_file) . ".tif", 'temporary://');
-
-    $c_args = array(
-      '-colorspace Gray',
-      '-depth 8',
-      '-compress None',
-      '-alpha Off',
-    );
-
-    $old_source = $source_file;
-    $source_file = islandora_ocr_imagemagick_convert($source_file, $c_dest, $c_args);
-    drupal_unlink($old_source);
-  }
-
   return array(
     'OCR' => islandora_ocr_create_ocr($source_file, $options),
     'HOCR' => islandora_ocr_create_hocr($source_file, $options),
