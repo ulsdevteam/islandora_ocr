@@ -159,6 +159,7 @@ function islandora_ocr_generate_derivatives(AbstractDatastream $datastream, arra
 
   $depth = intval(exec(escapeshellcmd("$identify -format \"%z\" $file")));
   $codec = strtolower(exec(escapeshellcmd("$identify -format \"%m\" $file")));
+  $alpha = exec(escapeshellcmd("$identify -format \"%A\" $file"));
 
   // XXX: Likely an incomplete list... Cursory search didn't turn up a full
   // list.
@@ -167,14 +168,14 @@ function islandora_ocr_generate_derivatives(AbstractDatastream $datastream, arra
     'tiff',
     'png',
   );
-
-  if ($depth > 8 || !in_array($codec, $supported_codecs)) {
+  if ($depth > 8 || !in_array($codec, $supported_codecs) || $alpha == 'True') {
     $c_dest = file_create_filename(drupal_basename($source_file) . ".tif", 'temporary://');
 
     $c_args = array(
       '-colorspace Gray',
       '-depth 8',
       '-compress None',
+      '-alpha Off',
     );
 
     $old_source = $source_file;
@@ -209,7 +210,7 @@ function islandora_ocr_get_converted_source(AbstractDatastream $datastream) {
 
   $depth = intval(exec(escapeshellcmd("$identify -format \"%z\" $file")));
   $codec = strtolower(exec(escapeshellcmd("$identify -format \"%m\" $file")));
-
+  $alpha = exec(escapeshellcmd("$identify -format \"%A\" $file"));
   // XXX: Likely an incomplete list... Cursory search didn't turn up a full
   // list.
   $supported_codecs = array(
@@ -218,13 +219,14 @@ function islandora_ocr_get_converted_source(AbstractDatastream $datastream) {
     'png',
   );
 
-  if ($depth > 8 || !in_array($codec, $supported_codecs)) {
+  if ($depth > 8 || !in_array($codec, $supported_codecs) || $alpha == 'True') {
     $c_dest = file_create_filename(drupal_basename($source_file) . ".tif", 'temporary://');
 
     $c_args = array(
       '-colorspace Gray',
       '-depth 8',
       '-compress None',
+      '-alpha Off',
     );
 
     $old_source = $source_file;
