@@ -119,6 +119,8 @@ function islandora_ocr_tesseract_language_name($language) {
  *   the value is a human readable version of the language.
  */
 function islandora_ocr_get_enabled_tesseract_languages() {
-  $enabled_languages = array_filter(variable_get('islandora_ocr_tesseract_enabled_languages', array()));
+  $tesseract = variable_get('islandora_ocr_tesseract', '/usr/bin/tesseract');
+  $installed_languages = islandora_ocr_get_tesseract_installed_languages($tesseract);
+  $enabled_languages = array_filter(variable_get('islandora_ocr_tesseract_enabled_languages', drupal_map_assoc($installed_languages)));
   return array_merge(drupal_map_assoc($enabled_languages, 'islandora_ocr_tesseract_language_name'), array('no_ocr' => t('Do not perform OCR')));
 }
