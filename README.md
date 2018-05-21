@@ -17,6 +17,7 @@ This module requires the following modules/libraries:
 * [Islandora](https://github.com/islandora/islandora)
 * [Tuque](https://github.com/islandora/tuque)
 * [Tesseract](https://github.com/tesseract-ocr/tesseract/wiki)
+* [Islandora Solr Search](https://github.com/Islandora/islandora_solr_search)
 * [ImageMagick](http://www.imagemagick.org/) (Optional, Required for OCR preprocessing)
 
 Tesseract installation will differ depending on your operating system; please see the
