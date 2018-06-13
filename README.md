@@ -19,7 +19,7 @@ This module requires the following modules/libraries:
 * [Tesseract](https://github.com/tesseract-ocr/tesseract/wiki)
 * [ImageMagick](http://www.imagemagick.org/) (Optional, Required for OCR preprocessing)
 
-Islandora recommend this module for text search of OCR-ed material:
+Islandora recommends this module for text search of OCR-ed material:
 
 * [Islandora Solr Search](https://github.com/Islandora/islandora_solr_search)
 
