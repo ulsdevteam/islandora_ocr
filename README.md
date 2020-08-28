@@ -51,7 +51,7 @@ Each text node of each element in the HOCR datastream must be placed in order in
 
 Any objects that were previously ingested but require this functionality will need to be re-indexed.
 
-[XSLT Reference Implementation for GSearch](https://github.com/discoverygarden/islandora_transforms/blob/master/XML_text_nodes_to_solr.xslt)
+[XSLT Reference Implementation for GSearch](https://github.com/discoverygarden/islandora_transforms/blob/main/XML_text_nodes_to_solr.xslt)
 
 
 ### Tesseract
