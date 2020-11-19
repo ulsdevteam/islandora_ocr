@@ -50,6 +50,7 @@ function islandora_ocr_create_ocr($image_file, array $options) {
  *   The absolute path to the generated HOCR if successful, FALSE otherwise.
  */
 function islandora_ocr_create_hocr($image_file, array $options) {
+  if (!module_exists('islandora_ocr')) { return; }
   $image_file = drupal_realpath($image_file);
   $out_file = "$image_file.html";
   $executable = variable_get('islandora_ocr_tesseract', '/usr/bin/tesseract');
