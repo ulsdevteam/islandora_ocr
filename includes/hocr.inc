@@ -422,7 +422,7 @@ class HOCR {
    *   The XPath predicate to match the given term exactly.
    */
   protected function getCaseSensitiveMatchTermExpression($term, $node = 'text()') {
-    return "$node = '{$term}'";
+    return "$node = " . $this->escapeXpathQuote($term);
   }
 
   /**
@@ -436,7 +436,43 @@ class HOCR {
    */
   protected function getCaseInsensitiveMatchTermExpression($term, $node = 'text()') {
     $term = mb_strtolower($term);
-    return "php:functionString('mb_strtolower', $node) = '{$term}'";
+    return "php:functionString('mb_strtolower', $node) = " . $this->escapeXpathQuote($term);
+  }
+
+  /**
+   * Handles string adjustments with quotes.
+   *
+   * @param string $value
+   *   The value to escape for an xpath query.
+   *
+   * @return string
+   *   The updated string.
+   *
+   * @see: https://github.com/minkphp/Mink/blob/master/src/Selector/Xpath/Escaper.php.
+   */
+  protected function escapeXpathQuote($value) {
+    if (FALSE === strpos($value, "'")) {
+      return sprintf("'%s'", $value);
+    }
+
+    if (FALSE === strpos($value, '"')) {
+      return sprintf('"%s"', $value);
+    }
+
+    $string = $value;
+    $parts = array();
+    while (TRUE) {
+      if (FALSE !== $pos = strpos($string, "'")) {
+        $parts[] = sprintf("'%s'", substr($string, 0, $pos));
+        $parts[] = "\"'\"";
+        $string = substr($string, $pos + 1);
+      }
+      else {
+        $parts[] = "'$string'";
+        break;
+      }
+    }
+    return sprintf('concat(%s)', implode(',', $parts));
   }
 
   /**
